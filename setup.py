@@ -15,6 +15,7 @@ setup(name="tgldapid",
       license="MIT",
       install_requires=[
           "TurboGears >= 1.1",
+          "python-ldap >= 2.3",
       ],
       zip_safe=False,
       packages=packages,
