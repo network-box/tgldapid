@@ -10,6 +10,7 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
     def __init__(self):
         super(SoLdapIdentityProvider, self).__init__()
 
+        self.protocol = getconfig("identity.soldapprovider.protocol", "ldap")
         self.host = getconfig("identity.soldapprovider.host", "localhost")
         self.port = getconfig("identity.soldapprovider.port", 389)
         self.basedn  = getconfig("identity.soldapprovider.basedn",
@@ -19,7 +20,8 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
 
     def validate_password(self, user, user_name, password):
         """Validates user_name and password against an AD domain."""
-        ldapcon = ldap.open(self.host, self.port)
+        ldapcon = ldap.initialize("%s://%s:%s" % (self.protocol, self.host,
+                                                  self.port))
         filter = "(sAMAccountName=%s)" % user_name
         rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE, filter)
                             
