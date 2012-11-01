@@ -4,11 +4,11 @@ from turbogears.identity.soprovider import SqlObjectIdentityProvider
 import ldap
 
 
-class SoLdapIdentityProvider(SqlObjectIdentityProvider):
+class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
     """IdentityProvider that uses LDAP for authentication."""
 
     def __init__(self):
-        super(SoLdapIdentityProvider, self).__init__()
+        super(LdapSqlObjectIdentityProvider, self).__init__()
 
         self.protocol = getconfig("identity.soldapprovider.protocol", "ldap")
         self.host = getconfig("identity.soldapprovider.host", "localhost")
