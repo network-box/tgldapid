@@ -13,6 +13,7 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
         self.protocol = getconfig("identity.soldapprovider.protocol", "ldap")
         self.host = getconfig("identity.soldapprovider.host", "localhost")
         self.port = getconfig("identity.soldapprovider.port", 389)
+        self.cacert = getconfig("identity.soldapprovider.cacertfile", None)
         self.basedn  = getconfig("identity.soldapprovider.basedn",
                                  "dc=localhost")
         self.autocreate = getconfig("identity.soldapprovider.autocreate",
@@ -20,6 +21,9 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
 
     def validate_password(self, user, user_name, password):
         """Validates user_name and password against an AD domain."""
+        if self.cacert:
+            ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.cacert)
+
         ldapcon = ldap.initialize("%s://%s:%s" % (self.protocol, self.host,
                                                   self.port))
         filter = "(sAMAccountName=%s)" % user_name
