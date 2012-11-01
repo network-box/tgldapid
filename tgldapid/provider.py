@@ -1,2 +1,0 @@
-class LdapIdentityProvider(object):
-    pass

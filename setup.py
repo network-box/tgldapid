@@ -31,7 +31,7 @@ setup(name="tgldapid",
       ],
       entry_points = {
           'turbogears.identity.provider': [
-              'ldapprovider = tgldapid.provider:LdapIdentityProvider'
+              'soldapprovider = tgldapid.soldapprovider:SQLObjectLdapIdentityProvider'
           ]
       },
       )
