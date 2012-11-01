@@ -26,6 +26,13 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
         userclass_path = getconfig('identity.soprovider.model.user')
         self.userclass_name = userclass_path.split(".")[-1]
 
+    def __get_ldap_connection(self):
+        """Initialize the connection to the LDAP server."""
+        if self.cacert:
+            ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.cacert)
+
+        return ldap.initialize(self.ldap)
+
     def validate_identity(self, user_name, password, visit_key):
         """Validate the identity represented by user_name using the password.
 
@@ -56,13 +63,10 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
         The `user` parameter is completely ignored, but that's how TG expects
         the API to be.
         """
-        if self.cacert:
-            ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.cacert)
-
-        ldapcon = ldap.initialize(self.ldap)
         filter = "(%s=%s)" % (self.filter_id, user_name)
+
+        ldapcon = self.__get_ldap_connection()
         rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE, filter)
-                            
         objects = ldapcon.result(rc)[1]
 
         if(len(objects) == 0):
