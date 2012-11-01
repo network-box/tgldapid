@@ -17,11 +17,6 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
         self.autocreate = getconfig("identity.soldapprovider.autocreate",
                                     False)
 
-        log.info("host :: %s" % self.host)
-        log.info("port :: %d" % self.port)
-        log.info("basedn :: %s" % self.basedn)
-        log.info("autocreate :: %s" % self.autocreate)
-
     def validate_password(self, user, user_name, password):
         """Validates user_name and password against an AD domain."""
         ldapcon = ldap.open(self.host, self.port)
