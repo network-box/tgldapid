@@ -19,7 +19,9 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
         self.cacert = getconfig("identity.soldapprovider.cacertfile", None)
         self.basedn  = getconfig("identity.soldapprovider.basedn",
                                  "dc=localhost")
-        self.filter_id  = getconfig("identity.soldapprovider.filter_id", "uid")
+        self.filter = ("(%s=%s)"
+                       % (getconfig("identity.soldapprovider.filter_id", "uid"),
+                          "%s")
         self.autocreate = getconfig("identity.soldapprovider.autocreate",
                                     False)
 
@@ -63,10 +65,9 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
         The `user` parameter is completely ignored, but that's how TG expects
         the API to be.
         """
-        filter = "(%s=%s)" % (self.filter_id, user_name)
-
         ldapcon = self.__get_ldap_connection()
-        rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE, filter)
+        rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE,
+                            self.filter % user_name)
         objects = ldapcon.result(rc)[1]
 
         if(len(objects) == 0):
