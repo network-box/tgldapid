@@ -16,6 +16,7 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
         self.cacert = getconfig("identity.soldapprovider.cacertfile", None)
         self.basedn  = getconfig("identity.soldapprovider.basedn",
                                  "dc=localhost")
+        self.filter_id  = getconfig("identity.soldapprovider.filter_id", "uid")
         self.autocreate = getconfig("identity.soldapprovider.autocreate",
                                     False)
 
@@ -26,7 +27,7 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
 
         ldapcon = ldap.initialize("%s://%s:%s" % (self.protocol, self.host,
                                                   self.port))
-        filter = "(sAMAccountName=%s)" % user_name
+        filter = "(%s=%s)" % (self.filter_id, user_name)
         rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE, filter)
                             
         objects = ldapcon.result(rc)[1]
