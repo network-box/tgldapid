@@ -5,9 +5,7 @@ import ldap
 
 
 class SoLdapIdentityProvider(SqlObjectIdentityProvider):
-    """
-    IdentityProvider that uses LDAP for authentication.
-    """
+    """IdentityProvider that uses LDAP for authentication."""
 
     def __init__(self):
         super(SoLdapIdentityProvider, self).__init__()
@@ -24,12 +22,8 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
         log.info("basedn :: %s" % self.basedn)
         log.info("autocreate :: %s" % self.autocreate)
 
-    def validate_password( self, user, user_name, password ):
-        '''
-        Validates user_name and password against an AD domain.
-        
-        '''
-        
+    def validate_password(self, user, user_name, password):
+        """Validates user_name and password against an AD domain."""
         ldapcon = ldap.open(self.host, self.port)
         filter = "(sAMAccountName=%s)" % user_name
         rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE, filter)
