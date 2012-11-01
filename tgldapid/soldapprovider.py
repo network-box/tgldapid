@@ -21,7 +21,11 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
                                     False)
 
     def validate_password(self, user, user_name, password):
-        """Validates user_name and password against an AD domain."""
+        """Validates user_name and password against an AD domain.
+
+        The `user` parameter is completely ignored, but that's how TG expects
+        the API to be.
+        """
         if self.cacert:
             ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.cacert)
 
