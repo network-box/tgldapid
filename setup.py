@@ -16,6 +16,7 @@ setup(name="tgldapid",
       install_requires=[
           "TurboGears >= 1.1",
           "python-ldap >= 2.3",
+          "SQLObject",
       ],
       zip_safe=False,
       packages=packages,
