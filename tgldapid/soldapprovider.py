@@ -12,9 +12,10 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
     def __init__(self):
         super(LdapSqlObjectIdentityProvider, self).__init__()
 
-        self.protocol = getconfig("identity.soldapprovider.protocol", "ldap")
-        self.host = getconfig("identity.soldapprovider.host", "localhost")
-        self.port = getconfig("identity.soldapprovider.port", 389)
+        self.ldap = ("%s://%s:%s"
+                     % (getconfig("identity.soldapprovider.protocol", "ldap"),
+                        getconfig("identity.soldapprovider.host", "localhost"),
+                        getconfig("identity.soldapprovider.port", 389)))
         self.cacert = getconfig("identity.soldapprovider.cacertfile", None)
         self.basedn  = getconfig("identity.soldapprovider.basedn",
                                  "dc=localhost")
@@ -58,8 +59,7 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
         if self.cacert:
             ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.cacert)
 
-        ldapcon = ldap.initialize("%s://%s:%s" % (self.protocol, self.host,
-                                                  self.port))
+        ldapcon = ldap.initialize(self.ldap)
         filter = "(%s=%s)" % (self.filter_id, user_name)
         rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE, filter)
                             
