@@ -1,3 +1,5 @@
+from sqlobject import classregistry, SQLObjectNotFound
+
 from turbogears.config import get as getconfig
 from turbogears.identity.soprovider import SqlObjectIdentityProvider
 
@@ -19,6 +21,33 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
         self.filter_id  = getconfig("identity.soldapprovider.filter_id", "uid")
         self.autocreate = getconfig("identity.soldapprovider.autocreate",
                                     False)
+
+        userclass_path = getconfig('identity.soprovider.model.user')
+        self.userclass_name = userclass_path.split(".")[-1]
+
+    def validate_identity(self, user_name, password, visit_key):
+        """Validate the identity represented by user_name using the password.
+
+        The `visit_key` parameter is completely ignored, but that's how the
+        TurboGears API is supposed to be.
+        """
+        if self.autocreate:
+            # Try creating the user if it doesn't exist in the database
+            # This is useful to automatically populate the application DB with
+            # the users from the LDAP, the first time they try logging in.
+            user_class = classregistry.findClass(self.userclass_name)
+
+            try:
+                user = user_class.by_user_name(user_name)
+
+            except SQLObjectNotFound as e:
+                # Set an empty password, it doesn't matter anyway as it is
+                # checked from LDAP, not the application DB
+                user = user_class(user_name=user_name, password='')
+
+        return super(self.__class__, self).validate_identity(user_name,
+                                                             password,
+                                                             visit_key)
 
     def validate_password(self, user, user_name, password):
         """Validates user_name and password against an AD domain.
