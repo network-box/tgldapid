@@ -1,6 +1,7 @@
-import ldap
+from turbogears.config import get as getconfig
+from turbogears.identity.soprovider import SqlObjectIdentityProvider
 
-from soprovider import *
+import ldap
 
 
 class SoLdapIdentityProvider(SqlObjectIdentityProvider):
@@ -10,12 +11,13 @@ class SoLdapIdentityProvider(SqlObjectIdentityProvider):
 
     def __init__(self):
         super(SoLdapIdentityProvider, self).__init__()
-        get = turbogears.config.get
 
-        self.host = get("identity.soldapprovider.host", "localhost")
-        self.port = get("identity.soldapprovider.port", 389)
-        self.basedn  = get("identity.soldapprovider.basedn", "dc=localhost")
-        self.autocreate = get("identity.soldapprovider.autocreate", False)
+        self.host = getconfig("identity.soldapprovider.host", "localhost")
+        self.port = getconfig("identity.soldapprovider.port", 389)
+        self.basedn  = getconfig("identity.soldapprovider.basedn",
+                                 "dc=localhost")
+        self.autocreate = getconfig("identity.soldapprovider.autocreate",
+                                    False)
 
         log.info("host :: %s" % self.host)
         log.info("port :: %d" % self.port)
