@@ -41,9 +41,11 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
 
         return ldap.initialize(self.ldap)
 
-    def validate_identity(self, user_name, password, visit_key):
-        """Validate the identity."""
-        # Make sure the user exists in the LDAP
+    def __get_ldap_user_record(self, user_name):
+        """Return the record representing the user in LDAP.
+
+        If no user exist in LDAP with this `user_name`, return `None`.
+        """
         ldapcon = self.__get_ldap_connection()
         rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE,
                             self.filter % user_name)
@@ -56,8 +58,16 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
             log.error("Too many users: %s" % user_name)
             return None
 
-        user_record = objects[0]
+        return objects[0]
 
+    def validate_identity(self, user_name, password, visit_key):
+        """Validate the identity."""
+        # Make sure the user exists in the LDAP...
+        user_record = self.__get_ldap_user_record(user_name)
+        if not user_record:
+            return None
+
+        # ... and in the application DB
         user_class = classregistry.findClass(self.userclass_name)
 
         try:
