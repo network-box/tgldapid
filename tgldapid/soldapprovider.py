@@ -27,7 +27,7 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
                                  "dc=localhost")
         self.filter = ("(%s=%s)"
                        % (getconfig("identity.soldapprovider.filter_id", "uid"),
-                          "%s")
+                          "%s"))
         self.autocreate = getconfig("identity.soldapprovider.autocreate",
                                     False)
 
