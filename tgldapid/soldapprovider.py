@@ -3,7 +3,8 @@ import logging
 from sqlobject import classregistry, SQLObjectNotFound
 
 from turbogears.config import get as getconfig
-from turbogears.identity.soprovider import SqlObjectIdentityProvider
+from turbogears.identity.soprovider import (SqlObjectIdentityProvider,
+                                            SqlObjectIdentityProvider)
 
 import ldap
 
@@ -75,25 +76,28 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
                 # checked from LDAP, not the application DB
                 user = user_class(user_name=user_name, password='')
 
-        return super(self.__class__, self).validate_identity(user_name,
-                                                             password,
-                                                             visit_key)
+        if not self.validate_password(user_record, user_name, password):
+            log.info("Passwords don't match for user: %s", user_name)
+            return None
+
+        log.info("Associating user (%s) with visit (%s)", user_name, visit_key)
+        return SqlObjectIdentity(visit_key, user)
 
     def validate_password(self, user, user_name, password):
         """Validates user_name and password against an AD domain.
 
-        The `user` parameter is completely ignored, but that's how TG expects
-        the API to be.
+        The `user` parameter is **not** an instance of the user model class,
+        as would normally be the case in TurboGears identity providers.
+
+        Instead, it is an LDAP record representing the user.
+
+        The `user_name` parameter is completely ignored, but that's how TG
+        expects the API to be.
         """
-        ldapcon = self.__get_ldap_connection()
-        rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE,
-                            self.filter % user_name)
-        objects = ldapcon.result(rc)[1]
-
-
-        dn = objects[0][0]
+        dn = user[0]
 
         try:
+            ldapcon = self.__get_ldap_connection()
             rc = ldapcon.simple_bind(dn, password)
             ldapcon.result(rc)
         except ldap.INVALID_CREDENTIALS:
