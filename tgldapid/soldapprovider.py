@@ -3,7 +3,7 @@ import logging
 from sqlobject import classregistry, SQLObjectNotFound
 
 from turbogears.config import get as getconfig
-from turbogears.identity.soprovider import (SqlObjectIdentityProvider,
+from turbogears.identity.soprovider import (SqlObjectIdentity,
                                             SqlObjectIdentityProvider)
 
 import ldap
