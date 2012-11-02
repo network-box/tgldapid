@@ -52,10 +52,10 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
         objects = ldapcon.result(rc)[1]
 
         if(len(objects) == 0):
-            log.warning("No such LDAP user: %s" % user_name)
+            log.warning("No such user in LDAP: %s" % user_name)
             return None
         elif(len(objects) > 1):
-            log.error("Too many users: %s" % user_name)
+            log.error("Too many users in LDAP: %s" % user_name)
             return None
 
         return objects[0]
@@ -74,12 +74,13 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
 
         except SQLObjectNotFound:
             if self.autocreate:
+                log.info("Creating user in app DB: %s" % user_name)
                 # Set an empty password, it doesn't matter anyway as it is
                 # checked from LDAP, not from the application DB
                 user = user_class(user_name=user_name, password='')
 
             else:
-                log.warning("No such user: %s", user_name)
+                log.error("No such user in app DB: %s", user_name)
                 return None
 
     def validate_identity(self, user_name, password, visit_key):
