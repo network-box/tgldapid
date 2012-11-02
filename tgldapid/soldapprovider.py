@@ -60,6 +60,28 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
 
         return objects[0]
 
+    def __ensure_user_in_database(self, user_name):
+        """Make sure the user exists in the application DB
+
+        If needed, autocreate it. This is useful to automatically populate the
+        application DB with users from the LDAP, the first time they try to
+        log in.
+        """
+        user_class = classregistry.findClass(self.userclass_name)
+
+        try:
+            user = user_class.by_user_name(user_name)
+
+        except SQLObjectNotFound:
+            if self.autocreate:
+                # Set an empty password, it doesn't matter anyway as it is
+                # checked from LDAP, not from the application DB
+                user = user_class(user_name=user_name, password='')
+
+            else:
+                log.warning("No such user: %s", user_name)
+                return None
+
     def validate_identity(self, user_name, password, visit_key):
         """Validate the identity."""
         # Make sure the user exists in the LDAP...
@@ -68,24 +90,8 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
             return None
 
         # ... and in the application DB
-        user_class = classregistry.findClass(self.userclass_name)
-
-        try:
-            user = user_class.by_user_name(user_name)
-
-        except SQLObjectNotFound as e:
-            if self.autocreate:
-                # Try creating the user if it doesn't exist in the database
-                # This is useful to automatically populate the application DB with
-                # the users from the LDAP, the first time they try logging in.
-
-                # Set an empty password, it doesn't matter anyway as it is
-                # checked from LDAP, not the application DB
-                user = user_class(user_name=user_name, password='')
-
-            else:
-                log.warning("No such user: %s", user_name)
-                return None
+        if not self.__ensure_user_in_database(user_name):
+            return None
 
         if not self.validate_password(user_record, user_name, password):
             log.info("Passwords don't match for user: %s", user_name)
