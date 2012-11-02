@@ -60,12 +60,15 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
 
         return objects[0]
 
-    def __ensure_user_in_database(self, user_name):
+    def __get_user_in_database(self, user_name):
         """Make sure the user exists in the application DB
 
         If needed, autocreate it. This is useful to automatically populate the
         application DB with users from the LDAP, the first time they try to
         log in.
+
+        Return the user instance from the DB if found or autocreated, or None
+        if not.
         """
         user_class = classregistry.findClass(self.userclass_name)
 
@@ -83,6 +86,8 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
                 log.error("No such user in app DB: %s", user_name)
                 return None
 
+        return user
+
     def validate_identity(self, user_name, password, visit_key):
         """Validate the identity."""
         # Make sure the user exists in the LDAP...
@@ -91,7 +96,8 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
             return None
 
         # ... and in the application DB
-        if not self.__ensure_user_in_database(user_name):
+        user = self.__get_user_in_database(user_name)
+        if not user:
             return None
 
         if not self.validate_password(user_record, user_name, password):
