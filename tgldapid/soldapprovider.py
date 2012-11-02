@@ -41,6 +41,21 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
         The `visit_key` parameter is completely ignored, but that's how the
         TurboGears API is supposed to be.
         """
+        # Make sure the user exists in the LDAP
+        ldapcon = self.__get_ldap_connection()
+        rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE,
+                            self.filter % user_name)
+        objects = ldapcon.result(rc)[1]
+
+        if(len(objects) == 0):
+            log.warning("No such LDAP user: %s" % user_name)
+            return None
+        elif(len(objects) > 1):
+            log.error("Too many users: %s" % user_name)
+            return None
+
+        user_record = objects[0]
+
         if self.autocreate:
             # Try creating the user if it doesn't exist in the database
             # This is useful to automatically populate the application DB with
