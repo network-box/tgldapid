@@ -92,7 +92,6 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
             rc = ldapcon.simple_bind(dn, password)
             ldapcon.result(rc)
         except ldap.INVALID_CREDENTIALS:
-            log.error("Invalid password supplied for %s" % user_name)
             return False
 
 	return True
