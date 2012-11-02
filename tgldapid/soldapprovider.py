@@ -9,7 +9,7 @@ from turbogears.identity.soprovider import (SqlObjectIdentity,
 import ldap
 
 
-log = logging.getLogger('turbogears.identity.soprovider')
+log = logging.getLogger('turbogears.identity.soldapprovider')
 
 
 class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
