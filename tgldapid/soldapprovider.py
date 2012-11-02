@@ -42,11 +42,7 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
         return ldap.initialize(self.ldap)
 
     def validate_identity(self, user_name, password, visit_key):
-        """Validate the identity represented by user_name using the password.
-
-        The `visit_key` parameter is completely ignored, but that's how the
-        TurboGears API is supposed to be.
-        """
+        """Validate the identity."""
         # Make sure the user exists in the LDAP
         ldapcon = self.__get_ldap_connection()
         rc = ldapcon.search(self.basedn, ldap.SCOPE_SUBTREE,
