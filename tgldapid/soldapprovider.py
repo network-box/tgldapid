@@ -60,7 +60,7 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
 
         return objects[0]
 
-    def __get_user_in_database(self, user_name):
+    def __get_user_in_database(self, user_name, user_record):
         """Make sure the user exists in the application DB
 
         If needed, autocreate it. This is useful to automatically populate the
@@ -80,7 +80,8 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
                 log.info("Creating user in app DB: %s" % user_name)
                 # Set an empty password, it doesn't matter anyway as it is
                 # checked from LDAP, not from the application DB
-                user = user_class(user_name=user_name, password='')
+                user = user_class(user_name=user_name, password='',
+                                  display_name=user_record[1]['cn'][0])
 
             else:
                 log.error("No such user in app DB: %s", user_name)
@@ -96,7 +97,7 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
             return None
 
         # ... and in the application DB
-        user = self.__get_user_in_database(user_name)
+        user = self.__get_user_in_database(user_name, user_record)
         if not user:
             return None
 
