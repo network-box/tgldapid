@@ -85,12 +85,6 @@ class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
                             self.filter % user_name)
         objects = ldapcon.result(rc)[1]
 
-        if(len(objects) == 0):
-            log.warning("No such LDAP user: %s" % user_name)
-            return False
-        elif(len(objects) > 1):
-            log.error("Too many users: %s" % user_name)
-            return False
 
         dn = objects[0][0]
 
