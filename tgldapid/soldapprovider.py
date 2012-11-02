@@ -1,9 +1,14 @@
+import logging
+
 from sqlobject import classregistry, SQLObjectNotFound
 
 from turbogears.config import get as getconfig
 from turbogears.identity.soprovider import SqlObjectIdentityProvider
 
 import ldap
+
+
+log = logging.getLogger('turbogears.identity.soprovider')
 
 
 class LdapSqlObjectIdentityProvider(SqlObjectIdentityProvider):
