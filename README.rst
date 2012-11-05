@@ -4,14 +4,31 @@ About tgldapid
 This is an identity provider for the TurboGears web framework to authenticate
 users against an LDAP server.
 
-It has been written and tested for TurboGears 1.1, and might (or might not)
-work for later versions.
-
 However, the authorization mechanism is left up to the application database
 (i.e it doesn't handle groups and permissions itself).
 
 It works only with SQLObject, but an SQLAlchemy provider could be added in the
 future.
+
+
+Install
+=======
+
+To use this software, you need:
+
+    - TurboGears == 1.1
+      It has only been tested with this version but could probably work or be
+      made to work with other versions. Feedback and/or patches are warmly
+      welcome.
+    - Python == 2.6
+      This is the version on EL 6 where I'm developing/testing/running this
+      code, but again, it would most likely work fine with other versions.
+      Feedback and/or patches will also be gladly taken.
+
+Installing this plugin from the sources should be as simple as running one
+command, as root::
+
+    # python setup.py install
 
 
 Legal
