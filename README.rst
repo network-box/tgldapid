@@ -1,9 +1,11 @@
-This is an identity provider for the TurboGears web framework.
+About tgldapid
+==============
+
+This is an identity provider for the TurboGears web framework to authenticate
+users against an LDAP server.
 
 It has been written and tested for TurboGears 1.1, and might (or might not)
 work for later versions.
-
-It allows authenticating users against an LDAP server.
 
 However, the authorization mechanism is left up to the application database
 (i.e it doesn't handle groups and permissions itself).
