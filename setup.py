@@ -6,7 +6,7 @@ packages=find_packages()
 package_data = find_package_data(where='tgldapid', package='tgldapid')
 
 setup(name="tgldapid",
-      version="0.1",
+      version="1.0",
       description="A TurboGeard LDAP identity provider",
       author="Mathieu Bridon",
       author_email="bochecha@fedoraproject.org",
